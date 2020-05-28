@@ -1,20 +1,18 @@
 ## Syslog-ng in Alpine Docker
 
-[![CircleCI](https://circleci.com/gh/mumblepins-docker/syslog-ng-alpine.svg?style=shield)](https://circleci.com/gh/mumblepins-docker/syslog-ng-alpine)
+[![CircleCI](https://circleci.com/gh/agowa338-docker/syslog-ng-alpine.svg?style=shield)](https://circleci.com/gh/agowa338-docker/syslog-ng-alpine)
 
 [![](
-https://images.microbadger.com/badges/commit/mumblepins/syslog-ng-alpine.svg)](
-https://github.com/mumblepins-docker/syslog-ng-alpine) [![](
-https://images.microbadger.com/badges/image/mumblepins/syslog-ng-alpine.svg)](
-https://microbadger.com/images/mumblepins/syslog-ng-alpine
+https://images.microbadger.com/badges/commit/agowa338/syslog-ng-alpine.svg)](
+https://github.com/agowa338-docker/syslog-ng-alpine) [![](
+https://images.microbadger.com/badges/image/agowa338/syslog-ng-alpine.svg)](
+https://microbadger.com/images/agowa338/syslog-ng-alpine
 "Get your own image badge on microbadger.com")
 
 ### Basic Info
-Minimal syslog-ng container that writes logs to `/var/log/syslog-ng/$HOST/$PROGRAM.log`.
+Minimal syslog-ng container that writes logs to `syslog-ng-logs:/$HOST/$PROGRAM.log`.
 
-Modified from [karantin2020/docker-syslog-ng](https://github.com/karantin2020/docker-syslog-ng), and the [balabit docker image's](https://github.com/balabit/syslog-ng-docker) config file (which isn't included in that build...)
-
-Includes a default config file if none specified, or alternatively use your own by binding `/etc/syslog-ng`.
+Modified from [mumblepins-docker/syslog-ng-alpine](https://github.com/mumblepins-docker/syslog-ng-alpine)
 
 Uses Tini for monitoring
 
@@ -32,12 +30,13 @@ Exposed Volumes:
 
 #### Usage
 
-Listen on udp port 514 and save logs to `/var/log/syslog-ng`:
+Listen on udp port 514 and save logs to volume:
 
 ```bash
 docker run -d -p 514:514/udp \
-    -v /var/log/syslog-ng:/var/log/syslog-ng \
-    --name syslog-ng mumblepins/syslog-ng-alpine
+  -p 601:601 \
+  -p 6514:6514 \
+  --name syslog-ng agowa338/syslog-ng-alpine
 ```
 
 #### Docker-compose example
@@ -48,11 +47,20 @@ services:
     container_name: syslog-ng
     build: .
     ports:
-      - "514:514"
+      - "514:514/udp"
       - "601:601"
       - "6514:6514"
     volumes:
-      - "./syslog-ng/logs:/var/log/syslog-ng"
-      - "./syslog-ng/socket:/var/run/syslog-ng"
-      - "./syslog-ng/config/:/etc/syslog-ng"
+      - syslog-ng-logs:/var/log/syslog-ng
+      - syslog-ng-socket:/var/run/syslog-ng
+      - syslog-ng-config:/etc/syslog-ng
+
+volumes:
+  syslog-ng-logs:
+  syslog-ng-socket:
+    driver_opts:
+      type: none
+      device: /var/run/syslog-ng
+      o: bind
+  syslog-ng-config:
 ```

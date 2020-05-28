@@ -1,9 +1,9 @@
 defaults: &defaults
   working_directory: /tmp/image_build
   docker:
-    - image: mumblepins/circleci-dev:debian
+    - image: agowa338/circleci-dev:debian
       environment:
-        DOCKER_IMAGE: "mumblepins/syslog-ng-alpine"
+        DOCKER_IMAGE: "agowa338/syslog-ng-alpine"
 
 version: 2
 jobs:
