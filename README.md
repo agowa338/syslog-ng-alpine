@@ -45,7 +45,7 @@ version: '3'
 services:
   syslog-ng:
     container_name: syslog-ng
-    build: .
+    image: agowa338/syslog-ng-alpine:latest
     ports:
       - "514:514/udp"
       - "601:601"
