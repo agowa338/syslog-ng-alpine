@@ -1,9 +1,6 @@
-FROM alpine:3.6
+FROM alpine:latest
 
 LABEL maintainer="Klaus Frank <https://github.com/agowa338>"
-
-ARG SYSLOG_VERSION="3.12.1"
-ARG BUILD_CORES=2
 
 RUN apk add --no-cache \
     glib \
@@ -12,6 +9,14 @@ RUN apk add --no-cache \
     openssl \
     tini \
     && apk add --no-cache --virtual .build-deps \
+    autoconf \
+    autoconf-archive \
+    automake \
+    libtool \
+    bison \
+    flex \
+    hiredis \
+    hiredis-dev \
     curl \
     alpine-sdk \
     glib-dev \
@@ -20,12 +25,14 @@ RUN apk add --no-cache \
     openssl-dev \
     && set -ex \
     && cd /tmp \
-    && curl -sSL "https://github.com/balabit/syslog-ng/releases/download/syslog-ng-${SYSLOG_VERSION}/syslog-ng-${SYSLOG_VERSION}.tar.gz" \
-        | tar xz \
-    && cd "syslog-ng-${SYSLOG_VERSION}" \
+    && git clone https://github.com/syslog-ng/syslog-ng.git \
+    && cd syslog-ng \
+    && git submodule update --init --remote --recursive \
+    && ./autogen.sh \
     && ./configure -q --prefix=/usr \
-    && make -j $BUILD_CORES \
+    && /bin/ash -c 'make -j $(nproc)' \
     && make install \
+    && cd /tmp \
     && rm -rf /tmp/* \
     && apk del --no-cache .build-deps \
     && mkdir -p /etc/syslog-ng /var/run/syslog-ng /var/log/syslog-ng
