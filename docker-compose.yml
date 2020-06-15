@@ -5,6 +5,7 @@ services:
     build: .
     ports:
       - "514:514/udp"
+      - "514:514"
       - "601:601"
       - "6514:6514"
     volumes:

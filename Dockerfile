@@ -57,7 +57,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 
 VOLUME ["/var/log/syslog-ng", "/var/run/syslog-ng", "/etc/syslog-ng"]
 
-EXPOSE 514/udp 601/tcp 6514/tcp
+EXPOSE 514/udp 514/tcp 601/tcp 6514/tcp
 
 ENTRYPOINT ["tini", "--"]
 
